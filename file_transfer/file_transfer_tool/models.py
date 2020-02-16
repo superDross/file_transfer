@@ -20,10 +20,6 @@ class Files(models.Model):
     url = models.CharField(
         max_length=255, help_text="url that allows the user to download this file"
     )
-    # change auto now add
-    valid_until = models.DateTimeField(
-        auto_now_add=True, help_text="download expiration date"
-    )
 
     def __str__(self):
         return self.name

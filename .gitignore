@@ -1,4 +1,6 @@
 # Custom
+*.vim
+media/
 *.jpg
 *.swp
 *.pdf

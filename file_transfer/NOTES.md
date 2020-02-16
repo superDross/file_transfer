@@ -15,7 +15,7 @@ Upload Page
 
 Download Page
 
-- URL should be `/download/<uuid>`
+<!-- - URL should be `/download/<uuid>` -->
 - Pop up asks for a password, if pass download and go to success page
 
 Success Page
