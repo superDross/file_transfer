@@ -15,10 +15,7 @@ class Files(models.Model):
     name = models.CharField(max_length=255, help_text="file name")
     uploaded_at = models.DateTimeField(auto_now_add=True, help_text="time of upload")
     password = models.CharField(
-        max_length=15, help_text="password required to allow user to download file"
-    )
-    url = models.CharField(
-        max_length=255, help_text="url that allows the user to download this file"
+        max_length=255, help_text="password required to allow user to download file"
     )
 
     def __str__(self):
