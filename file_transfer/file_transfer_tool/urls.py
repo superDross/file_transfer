@@ -5,6 +5,6 @@ from . import views
 app_name = "file_transfer_tool"
 
 urlpatterns = [
-    path("upload/", views.upload_file, name="upload"),
-    re_path(r"^download/(.*)/", views.download_page, name="download"),
+    path("upload/", views.Upload.as_view(), name="upload"),
+    re_path(r"^download/(?P<id>(.*))/", views.Download.as_view(), name="download"),
 ]

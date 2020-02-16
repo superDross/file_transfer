@@ -1,71 +1,59 @@
-# from django.views.generic.edit import FormView
-# from file_transfer_tool.forms import UploadFileForm
-
-
-# class Upload(FormView):
-#     template_name = "file_transfer_tool/upload.html"
-#     form_class = UploadFileForm
-#     success_url = "/upload/"
-
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.views.generic.edit import FormView
 
 from .forms import DownloadForm, UploadFileForm
 from .models import Files
 
-# https://docs.djangoproject.com/en/3.0/topics/http/file-uploads/
 
-def upload_file(request):
-    if request.method == "POST":
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = form.save(commit=True)
-            download_url = f"{request.get_host()}/download/{file.id}/"
+class Upload(FormView):
+    template_name = "file_transfer_tool/upload.html"
+    form_class = UploadFileForm
+
+    def form_valid(self, form):
+        file = form.save(commit=True)
+        download_url = f"{self.request.get_host()}/download/{file.id}/"
+        return render(
+            request=self.request,
+            template_name="file_transfer_tool/successful_upload.html",
+            context={"file": file, "download_url": download_url},
+        )
+
+
+class Download(FormView):
+    template_name = "file_transfer_tool/download_password.html"
+    form_class = DownloadForm
+
+    def _file_exists(self):
+        try:
+            Files.objects.get(id=self.kwargs.get("id"))
+            return True
+        except (Files.DoesNotExist, ValidationError):
+            return False
+
+    def form_valid(self, form):
+        """
+        Only allows downloading if the correct password had been given
+        """
+        given_password = form["password"].value()
+        file = Files.objects.get(id=self.kwargs.get("id"))
+        if file.password != given_password:
             return render(
-                request=request,
-                template_name="file_transfer_tool/successful_upload.html",
-                context={'file': file, 'download_url': download_url}
+                request=self.request,
+                template_name="file_transfer_tool/invalid_password.html",
+                context={"form": form},
             )
-    else:
-        form = UploadFileForm()
-    return render(
-        request=request,
-        template_name="file_transfer_tool/upload.html",
-        context={"form": form},
-    )
+        filename = file.file.name.split("/")[-1]
+        response = HttpResponse(file.file, content_type="text/plain")
+        response["Content-Disposition"] = f"attachment; filename={filename}"
+        return response
 
-
-def download_page(request, obj_id):
-    if request.method == "POST":
-        form = DownloadForm(request.POST)
-        if form.is_valid():
-            given_password = form["password"].value()
-            file = Files.objects.get(id=obj_id)
-            if file.password != given_password:
-                return render(
-                    request=request,
-                    template_name="file_transfer_tool/invalid_password.html",
-                    context={"form": form},
-                )
-            filename = file.file.name.split("/")[-1]
-            response = HttpResponse(file.file, content_type="text/plain")
-            response["Content-Disposition"] = f"attachment; filename={filename}"
-            return response
-    else:
-        if not file_exists(obj_id):
+    def get(self, request, *args, **kwargs):
+        if not self._file_exists():
             return render(
                 request=request,
                 template_name="file_transfer_tool/does_not_exist.html",
-                context={"object_identity": obj_id},
+                context={"object_identity": self.kwargs.get("id")},
             )
-        form = DownloadForm()
-    return render(request, "file_transfer_tool/download_password.html", {"form": form})
-
-
-def file_exists(obj_id):
-    try:
-        Files.objects.get(id=obj_id)
-        return True
-    except (Files.DoesNotExist, ValidationError):
-        return False
+        return super().get(request, *args, **kwargs)
