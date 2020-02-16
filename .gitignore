@@ -1,4 +1,5 @@
 # Custom
+db.sqlite3
 *.vim
 media/
 *.jpg
