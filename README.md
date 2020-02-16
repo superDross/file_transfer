@@ -1,5 +1,7 @@
 # File Transfer
 
+This has been tested with Python 3.8
+
 ## Install
 
 Clone this repo and `cd` into the directory created and enter the below command to install dependencies.
