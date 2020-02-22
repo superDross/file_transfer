@@ -25,7 +25,13 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install tox mypy isort black safety
+          pip install -r requirements.txt
+          pip install mypy isort black safety
+          safety check -r requirements
+          isort --check-only --diff -ws -tc -w 88
+          black --check .
+          mypy file_transfer_tool/
+          django manage test file_transfer_tool.tests
 
       - name: Test with Tox
         run: tox -e py
