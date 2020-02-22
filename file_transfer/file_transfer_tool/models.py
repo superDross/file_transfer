@@ -18,5 +18,5 @@ class Files(models.Model):
         max_length=255, help_text="password required to allow user to download file"
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name

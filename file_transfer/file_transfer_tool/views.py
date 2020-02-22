@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 from django.views.generic.edit import FormView
 
@@ -11,7 +11,7 @@ class Upload(FormView):
     template_name = "file_transfer_tool/upload.html"
     form_class = UploadFileForm
 
-    def form_valid(self, form):
+    def form_valid(self, form: UploadFileForm) -> HttpResponse:
         file = form.save(commit=True)
         download_url = f"{self.request.get_host()}/download/{file.id}/"
         return render(
@@ -25,14 +25,14 @@ class Download(FormView):
     template_name = "file_transfer_tool/download_password.html"
     form_class = DownloadForm
 
-    def _file_exists(self):
+    def _file_exists(self) -> bool:
         try:
             Files.objects.get(id=self.kwargs.get("id"))
             return True
         except (Files.DoesNotExist, ValidationError):
             return False
 
-    def form_valid(self, form):
+    def form_valid(self, form: DownloadForm) -> HttpResponse:
         """
         Only allows downloading if the correct password had been given
         """
@@ -45,7 +45,7 @@ class Download(FormView):
         response["Content-Disposition"] = f"attachment; filename={filename}"
         return response
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not self._file_exists():
             return render(
                 request=request,
