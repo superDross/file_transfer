@@ -39,8 +39,7 @@ class DownloadTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.get("Content-Disposition"),
-            "attachment; filename=temp.txt",
+            response.get("Content-Disposition"), "attachment; filename=temp.txt",
         )
 
     def test_invalid_id_in_url(self):

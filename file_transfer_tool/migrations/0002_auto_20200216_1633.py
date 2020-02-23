@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('file_transfer_tool', '0001_initial'),
+        ("file_transfer_tool", "0001_initial"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='files',
-            name='url',
-        ),
+        migrations.RemoveField(model_name="files", name="url",),
         migrations.AlterField(
-            model_name='files',
-            name='password',
-            field=models.CharField(help_text='password required to allow user to download file', max_length=255),
+            model_name="files",
+            name="password",
+            field=models.CharField(
+                help_text="password required to allow user to download file",
+                max_length=255,
+            ),
         ),
     ]

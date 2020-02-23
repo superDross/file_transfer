@@ -39,7 +39,7 @@ class Download(FormView):
         given_password = form["password"].value()
         file = Files.objects.get(id=self.kwargs.get("id"))
         if file.password != given_password:
-            return HttpResponse('Invalid password was parsed', status=401)
+            return HttpResponse("Invalid password was parsed", status=401)
         filename = file.file.name.split("/")[-1]
         response = HttpResponse(file.file, content_type="text/plain")
         response["Content-Disposition"] = f"attachment; filename={filename}"
@@ -51,6 +51,6 @@ class Download(FormView):
                 request=request,
                 template_name="file_transfer_tool/does_not_exist.html",
                 context={"object_identity": self.kwargs.get("id")},
-                status=404
+                status=404,
             )
         return super().get(request, *args, **kwargs)
