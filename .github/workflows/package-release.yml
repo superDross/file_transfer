@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install mypy isort black safety
-          safety check -r requirements
+          safety check -r requirements.txt
           isort --check-only --diff -ws -tc -w 88
           black --check .
           mypy file_transfer_tool/
